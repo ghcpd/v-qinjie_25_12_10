@@ -1,0 +1,13 @@
+# Minimal pinned dependencies for user_display module
+# Python 3.8+
+
+# Core dependencies (minimal)
+# (stdlib only - no external dependencies required)
+
+# Development/Testing dependencies
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-timeout==2.2.0
+
+# Optional: for enhanced performance metrics
+numpy==1.24.3; python_version >= '3.9'
