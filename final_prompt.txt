@@ -1,4 +1,4 @@
-# **Refactor & Extend the User Display Module — A High-Performance, Modular, Concurrent, and Fault-Tolerant System**
+# **Refactor & Extend the User Display Module — A High-Performance, Modular, Concurrent, and Fault-Tolerant System
 
 The provided `user_display_original.py` is a simplistic and unreliable baseline.
 Your task is to rebuild it into a fast, modular, concurrency-safe system capable of handling malformed data gracefully, while preserving the original public API.
@@ -53,3 +53,142 @@ Your task is to rebuild it into a fast, modular, concurrency-safe system capable
 * Support optional multi-threaded filtering.
 
 ## **2.2 Modular Package Structure**
+
+Recommended structure:
+
+```
+user_display/
+    __init__.py
+    store.py
+    index.py
+    formatters/
+        __init__.py
+        base.py
+        compact.py
+        json_fmt.py
+        table.py
+    filters/
+        __init__.py
+        base.py
+        regex_filter.py
+        composite_filter.py
+    validation/
+        __init__.py
+        base.py
+        default.py
+    config.py
+    logging_utils.py
+    metrics.py
+    errors.py
+    plugins.py
+```
+
+Roles:
+
+* **UserStore**: indexing, sharding, snapshotting (MVCC-like), thread-safe reads.
+* **formatters**: JSON/table/compact modes, conditional and trimmed fields.
+* **filters**: extensible strategies such as regex, prefix/suffix, multi-field rules.
+* **validation**: field validation with fallback recovery.
+* **config**: defaults, environment overrides, runtime overrides, freeze mode.
+* **logging_utils**: structured logs for debugging/auditing.
+* **metrics**: cache hits, shard usage, parallel filtering stats, validation issues.
+* **plugins**: dynamic registration for filters/formatters/validators.
+
+## **2.3 New Features**
+
+* Multiple formatting profiles (compact, JSON, table, custom).
+* Field-selection and conditional field-display rules.
+* Extensible filtering via plugin registration.
+* Pluggable validation with soft-failure recovery.
+* Cached filter results for repeated operations.
+* Snapshot and clone support for consistent concurrent reads.
+* Structured logging and internal debug state dumps.
+* Optional parallel filtering.
+
+## **2.4 API Compatibility**
+
+`user_display_optimized.py` must preserve the baseline interface:
+
+* `display_users(...)`
+* `get_user_by_id(...)`
+* `filter_users(...)`
+* `export_users_to_string(...)`
+
+Behavior must remain compatible for existing callers.
+
+## **2.5 Testing Requirements**
+
+Tests must validate:
+
+* All formatting modes
+* Field-selection and conditional rules
+* Multi-criteria filtering
+* Case-sensitive and regex behavior
+* Valid/invalid ID lookups
+* Handling of missing or corrupted data
+* Structured log generation
+* Metrics correctness
+* Parallel filtering correctness
+* Performance at a 50,000-user scale
+
+---
+
+# **3. Expected Deliverables**
+
+## **3.1 Code**
+
+Deliver:
+
+* `user_display_original.py` (baseline)
+* `user_display_optimized.py` (compatibility wrapper)
+* Modular package containing:
+
+  * storage/index modules
+  * formatters
+  * filters
+  * validation
+  * configuration system
+  * logging + metrics
+  * plugin loader
+  * error definitions
+
+## **3.2 Tests**
+
+Located under `tests/`, covering:
+
+* Functional behavior
+* Filtering
+* Formatting
+* Validation and recovery
+* Concurrency
+* Performance with 50,000 users
+
+## **3.3 Supporting Files**
+
+* `requirements.txt` (minimal, pinned)
+* `README.md` describing:
+
+  * baseline problems
+  * new architecture
+  * package structure
+  * plugin system
+  * performance benchmarking
+  * usage examples
+
+## **3.4 One-Click Test Script**
+
+A script named **`run_tests`** (or `run_tests.sh` / `run_tests.ps1`) must:
+
+* Create or activate the environment
+* Run all tests
+* Output results and performance metrics
+
+---
+
+# **Performance Targets**
+
+| Operation            | Target   |
+| -------------------- | -------- |
+| Display 50,000 users | < 120 ms |
+| Filter 50,000 users  | < 15 ms  |
+| ID lookup            | < 0.5 ms |
