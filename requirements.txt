@@ -1,0 +1,3 @@
+# Requirements for user display system
+# Minimal dependencies, all standard library except for optional concurrent features
+pytest>=7.0.0
